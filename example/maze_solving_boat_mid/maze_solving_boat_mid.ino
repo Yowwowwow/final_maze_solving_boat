@@ -28,7 +28,7 @@ int yaw;
 int ccc = 0;
 int dir = 0;
 int canrot = 0;
-int Lempty=0, Rempty=0, Close=0;
+int Lempty=0, Rempty=0;
 
 float angle(){
   float tmp = yaw - dir;
@@ -55,16 +55,18 @@ void setup() {
   digitalWrite(Bin1, HIGH);
 
   while (!Serial);
+  int www = 0;
   while(1){
     read_ultrasonic();
-    if(distF >= 15 && distF <= 100)break;
+    if(distF >= 15 && distF <= 100)www++; else www=0;
+    if(www>=3)break;
     delay(50);
   }
   if (!mpu.begin()) {
       Serial.println("MPU failed to start.");
       while (1);
   }
-  for(int i=0;i<5;i++){
+  for(int i=0;i<2;i++){
     digitalWrite(led, HIGH);
     delay(500);
     digitalWrite(led, LOW);
@@ -82,22 +84,12 @@ void loop() {
   read_MPU();
   int ls=0, rs=0; //left speed and right speed
   if(canrot==1){
-    if(distL < 20 && distF < 20 && distR < 20){
-      if(Close>=8){
-        dir += 180;
-        if(dir>180)dir-=360;
-        else if(dir<-180)dir+=360;
-        canrot = 0;
-        Lempty = Rempty = Close = 0;
-      }
-      else Close++;
-    }
     if(distL > 20 && distB > 20){
       if(Lempty>=8){
         dir += 90;
         if(dir>180)dir-=360;
         canrot = 0;
-        Lempty = Rempty = Close = 0;
+        Lempty = Rempty = 0;
       }
       else Lempty++;
     }
@@ -107,7 +99,7 @@ void loop() {
         dir -= 90;
         if(dir<-180)dir+=360;
         canrot = 0;
-        Lempty = Rempty = Close = 0;
+        Lempty = Rempty = 0;
       }
       else Rempty++;
     }
@@ -123,13 +115,13 @@ void loop() {
     if(ang > 5){//if left distance > right distance
       //int s = (((int)ang)-5)/175*60+60;
       ls = -100;
-      rs = 100;
+      rs = 110;
     }
     else{
       //int s = ((((int)ang)*(-1))-5)/175*60+60;
       //s*=10;
       //if(s>100)s=100;
-      ls = 100;
+      ls = 110;
       rs = -100;
     }
   }
