@@ -29,6 +29,7 @@ int ccc = 0;
 int dir = 0;
 int canrot = 0;
 int Lempty=0, Rempty=0, Close=0;
+int negate = 0;
 
 float angle(){
   float tmp = yaw - dir;
@@ -83,7 +84,7 @@ void loop() {
   int ls=0, rs=0; //left speed and right speed
   if(canrot==1){
     if(distL < 20 && distF < 20 && distR < 20){
-      if(Close>=8){
+      if(Close>=10){
         dir += 180;
         if(dir>180)dir-=360;
         else if(dir<-180)dir+=360;
@@ -93,7 +94,7 @@ void loop() {
       else Close++;
     }
     if(distL > 20 && distB > 20){
-      if(Lempty>=8){
+      if(Lempty>=10){
         dir += 90;
         if(dir>180)dir-=360;
         canrot = 0;
@@ -103,7 +104,7 @@ void loop() {
     }
     else Lempty = 0;
     if(distR > 20 && distB > 20){
-      if(Rempty>=8){
+      if(Rempty>=10){
         dir -= 90;
         if(dir<-180)dir+=360;
         canrot = 0;
@@ -114,23 +115,24 @@ void loop() {
     else Rempty = 0;
   }
   float ang = angle();
-  if(ang<5 && ang>-5){ //forward distance
-    ls = 150;
-    rs = 150;
+  if(ang < 5 && ang > -5){ //forward distance
+    ls = 180;
+    rs = 180;
     canrot = 1;
   }
   else{
-    if(ang > 5){//if left distance > right distance
-      //int s = (((int)ang)-5)/175*60+60;
-      ls = -100;
-      rs = 100;
-    }
-    else{
-      //int s = ((((int)ang)*(-1))-5)/175*60+60;
-      //s*=10;
-      //if(s>100)s=100;
-      ls = 100;
-      rs = -100;
+    if(ang > 5 && ang < 45){//if left distance > right distance
+      ls = -120;
+      rs = 135;
+    }else if(ang >= 45){
+      ls = -160;
+      rs = 160;
+    }else if(ang < -5 && ang > -45){
+      ls = 135;
+      rs = -120;
+    }else{
+      ls = 160;
+      rs = -160;
     }
   }
   motor(ls, rs);
